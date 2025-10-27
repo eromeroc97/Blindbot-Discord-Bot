@@ -140,82 +140,88 @@ client.login(TOKEN);
 // === SERVIDOR WEB ===
 console.log('🌐 Iniciando servidor web...');
 const server = http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(`
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Blindbot - Feliz Halloween</title>
-      <style>
-        body {
-          background: linear-gradient(135deg, #000 0%, #2F1B14 50%, #000 100%);
-          color: #FFA500;
-          font-family: 'Arial', sans-serif;
-          text-align: center;
-          padding: 50px;
-          margin: 0;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          position: relative;
-          overflow: hidden;
-        }
-        body::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text fill="%23FF4500" font-size="20" y="50%">🎃👻🦇</text></svg>') repeat;
-          opacity: 0.1;
-          z-index: -1;
-        }
-        h1 {
-          font-size: 4em;
-          text-shadow: 3px 3px #FF4500, 6px 6px #8B0000;
-          margin-bottom: 20px;
-          animation: glow 2s ease-in-out infinite alternate;
-        }
-        @keyframes glow {
-          from { text-shadow: 3px 3px #FF4500, 6px 6px #8B0000; }
-          to { text-shadow: 3px 3px #FF4500, 6px 6px #8B0000, 0 0 20px #FFA500; }
-        }
-        p {
-          font-size: 1.5em;
-          margin: 20px 0;
-          text-shadow: 1px 1px #8B0000;
-        }
-        .pumpkin {
-          font-size: 5em;
-          margin: 30px 0;
-          animation: bounce 3s infinite;
-        }
-        @keyframes bounce {
-          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-          40% { transform: translateY(-10px); }
-          60% { transform: translateY(-5px); }
-        }
-        .footer {
-          position: absolute;
-          bottom: 20px;
-          font-size: 1em;
-          opacity: 0.7;
-        }
-      </style>
-    </head>
-    <body>
-      <h1>🎃 Feliz Halloween 🎃</h1>
-      <p>Blindbot está activo y listo para la Hack&Win 2025!</p>
-      <div class="pumpkin">🦇👻🕷️</div>
-      <p class="footer">¡Preparad vuestras payloads! 🧪</p>
-    </body>
-    </html>
-  `);
+  if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }));
+    console.log('🏥 Health check solicitado');
+  } else {
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(`
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Blindbot - Feliz Halloween</title>
+        <style>
+          body {
+            background: linear-gradient(135deg, #000 0%, #2F1B14 50%, #000 100%);
+            color: #FFA500;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+          }
+          body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text fill="%23FF4500" font-size="20" y="50%">🎃👻🦇</text></svg>') repeat;
+            opacity: 0.1;
+            z-index: -1;
+          }
+          h1 {
+            font-size: 4em;
+            text-shadow: 3px 3px #FF4500, 6px 6px #8B0000;
+            margin-bottom: 20px;
+            animation: glow 2s ease-in-out infinite alternate;
+          }
+          @keyframes glow {
+            from { text-shadow: 3px 3px #FF4500, 6px 6px #8B0000; }
+            to { text-shadow: 3px 3px #FF4500, 6px 6px #8B0000, 0 0 20px #FFA500; }
+          }
+          p {
+            font-size: 1.5em;
+            margin: 20px 0;
+            text-shadow: 1px 1px #8B0000;
+          }
+          .pumpkin {
+            font-size: 5em;
+            margin: 30px 0;
+            animation: bounce 3s infinite;
+          }
+          @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+          }
+          .footer {
+            position: absolute;
+            bottom: 20px;
+            font-size: 1em;
+            opacity: 0.7;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>🎃 Feliz Halloween 🎃</h1>
+        <p>Blindbot está activo y listo para la Hack&Win 2025!</p>
+        <div class="pumpkin">🦇👻🕷️</div>
+        <p class="footer">¡Preparad vuestras payloads! 🧪</p>
+      </body>
+      </html>
+    `);
+  }
 });
 
 const PORT = process.env.PORT || 3000;
