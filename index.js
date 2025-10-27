@@ -38,7 +38,7 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds] // no necesitamos leer mensajes
 });
 
-client.once('clientReady', async () => {
+client.once('ready', async () => {
   console.log(`✅ Conectado como ${client.user.tag} (ID: ${client.user.id})`);
   console.log(`🌐 Servidores: ${client.guilds.cache.size}`);
   console.log(`⏳ Hora de conexión: ${new Date().toISOString()}`);
