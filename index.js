@@ -4,6 +4,10 @@ import cron from 'node-cron';
 import fs from 'node:fs';
 import http from 'node:http';
 
+// === TIMEZONE ===
+process.env.TZ = 'Europe/Madrid';
+console.log('🕒 Timezone configurado a Europe/Madrid');
+
 console.log('🚀 Iniciando Blindbot...');
 console.log('📋 Cargando configuración desde .env...');
 
