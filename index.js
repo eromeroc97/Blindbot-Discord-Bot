@@ -114,6 +114,12 @@ client.once('ready', async () => {
   });
 
   console.log(`🕒 Mensajes programados cada 20 min de 9:00 a 15:00`);
+
+  // === RESET DIARIO ===
+  cron.schedule('0 0 * * *', () => {
+    messageIndex = 0;
+    console.log('🔄 Mensajes reseteados a las 00:00 - Listos para el próximo día');
+  });
 });
 
 console.log('🔐 Intentando login con Discord...');
