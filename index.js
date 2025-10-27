@@ -27,6 +27,7 @@ console.log('📄 Cargando mensajes desde messages.json...');
 const messagesData = JSON.parse(fs.readFileSync('./messages.json', 'utf8'));
 const MESSAGES = messagesData.messages;
 let messageIndex = 0;
+let finalMessageSent = false;
 
 console.log(`📝 Total de mensajes cargados: ${MESSAGES.length}`);
 console.log('Mensajes:', MESSAGES);
@@ -68,25 +69,37 @@ client.once('ready', async () => {
 
     console.log(`⏰ Cron ejecutado: ${now.toISOString()} (Hora: ${hour}:${minute.toString().padStart(2, '0')})`);
 
-    // Solo enviar si está entre 9:00 y 15:00
-    if (hour >= 9 && hour <= 15 && minute % 20 === 0) {
-      console.log('✅ Horario válido para envío.');
+    let shouldSend = false;
+    let isFinalMessage = false;
+
+    if (hour >= 15 && !finalMessageSent) {
+      shouldSend = true;
+      isFinalMessage = true;
+      console.log('🎉 Enviando mensaje final (hora >= 15:00 y no enviado hoy).');
+    } else if (hour >= 9 && hour < 15 && minute % 20 === 0) {
+      shouldSend = true;
+      console.log('✅ Horario válido para mensaje regular.');
+    } else {
+      console.log('⏸️ No es momento para enviar mensaje.');
+    }
+
+    if (shouldSend) {
       try {
-        // Calcular minutos restantes hasta 15:00
-        const endTime = new Date(now);
-        endTime.setHours(15, 0, 0, 0);
-        const remainingMinutes = Math.max(0, Math.floor((endTime - now) / 60000));
-
         const timeStr = `${hour}:${minute.toString().padStart(2, '0')}`;
-        const prefix = `[Son las ${timeStr} quedan ${remainingMinutes} minutos]`;
+        let prefix = '';
+        let msg = '';
 
-        let msg;
-        let isSpecial = false;
-        if (remainingMinutes === 0) {
+        if (isFinalMessage) {
           msg = "¡Fin de la Hack&Win 2025! ¡Feliz Halloween!";
-          isSpecial = true;
-          console.log('🎉 Es el mensaje final especial.');
+          prefix = `[Son las ${timeStr}]`; // Sin "quedan x minutos" para el final
+          finalMessageSent = true;
         } else {
+          // Calcular minutos restantes hasta 15:00
+          const endTime = new Date(now);
+          endTime.setHours(15, 0, 0, 0);
+          const remainingMinutes = Math.max(0, Math.floor((endTime - now) / 60000));
+
+          prefix = `[Son las ${timeStr} quedan ${remainingMinutes} minutos]`;
           msg = MESSAGES[messageIndex];
           console.log(`📝 Usando mensaje índice ${messageIndex}: "${msg}"`);
           messageIndex = (messageIndex + 1) % MESSAGES.length;
@@ -102,14 +115,12 @@ client.once('ready', async () => {
           allowedMentions: { roles: [ROLE_ID] }
         });
 
-        const extraInfo = isSpecial ? 'Mensaje especial.' : `Índice usado: ${messageIndex - 1}`;
+        const extraInfo = isFinalMessage ? 'Mensaje final enviado.' : `Índice usado: ${messageIndex - 1}`;
         console.log(`✅ Mensaje enviado exitosamente a las ${timeStr}. ${extraInfo}`);
       } catch (e) {
         console.error('❌ Error enviando mensaje:', e);
         console.error('Stack trace:', e.stack);
       }
-    } else {
-      console.log('⏸️ Horario no válido o no es múltiplo de 20 min. No se envía mensaje.');
     }
   });
 
@@ -118,7 +129,8 @@ client.once('ready', async () => {
   // === RESET DIARIO ===
   cron.schedule('0 0 * * *', () => {
     messageIndex = 0;
-    console.log('🔄 Mensajes reseteados a las 00:00 - Listos para el próximo día');
+    finalMessageSent = false;
+    console.log('🔄 Mensajes y flag de mensaje final reseteados a las 00:00 - Listos para el próximo día');
   });
 });
 
